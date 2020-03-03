@@ -14,6 +14,11 @@ add_library(${NAME_LIB} SHARED ${SOURCES_LIB})
 target_include_directories(${NAME_LIB} PUBLIC ${GSL_INCLUDE_DIRS})
 target_link_libraries(${NAME_LIB} PUBLIC ${GSL_LIBRARIES})
 
+set(NAME_EXE ${NAME_LIB}_exe)
+add_executable(${NAME_EXE} DGLAP_MC_CLASSICAL.cxx)
+target_include_directories(${NAME_EXE} PUBLIC ${GSL_INCLUDE_DIRS})
+target_link_libraries(${NAME_EXE} PUBLIC ${GSL_LIBRARIES} ${NAME_LIB})
+
 # set(SWIG_TARGET_LINK_LIBRARIES ${GSL_LIBRARIES} ${NAME_LIB})
 swigify()
 install_targets_custom()

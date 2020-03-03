@@ -8,8 +8,8 @@
 
 ./scripts/build_dglap.sh
 
-# DGLAP:
+# DGLAP/DN
 
-Original DGLAP shower code by Duff Neill; 
-Some modifications by Felix Ringer
-Some code fixes and swig-pythonization by matplo
+- Original DGLAP shower code by Duff Neill; 
+- Some modifications by Felix Ringer
+- Some code fixes and swig-pythonization by matplo

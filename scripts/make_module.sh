@@ -87,6 +87,10 @@ function make_module_package()
 			[ $(os_darwin) ] &&  add_path_module ${modulefile} PYTHONPATH ${sp}
 		done
 
+		if [ -d "${bin_path}" ]; then
+			add_path_module ${modulefile} PATH ${bin_path}
+		fi
+
 		if [ ! -z ${X_PYTHON_MODULE_LOADED} ]; then
 			echo "prereq ${X_PYTHON_MODULE_LOADED}" >> ${modulefile}
 		fi
