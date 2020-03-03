@@ -20,7 +20,7 @@
 
 ```
 cd test
-run_dglap_dn_test.sh --nev=1000
+./run_dglap_dn_test.sh --nev=1000
 ```
 
 
