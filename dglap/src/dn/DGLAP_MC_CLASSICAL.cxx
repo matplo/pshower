@@ -24,10 +24,10 @@
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
 
-void JetFragmentation(PSEmissionsList *emissions, PSEmissionsList *DaughterEmissions, double *CurrentWTAaxis, double *JetRadii, 
-		      long int NumRadii, double *params, long int NumEbins, 
-		      double **LeadingJetSpectra, double **EventWideSpectra, double **EventWideSpectraLogBin, 
-		      long int NumEvent, double *t, double *InvertPg, double *InvertPq, long int NumInverts,  
+void JetFragmentation(PSEmissionsList *emissions, PSEmissionsList *DaughterEmissions, double *CurrentWTAaxis, double *JetRadii,
+		      long int NumRadii, double *params, long int NumEbins,
+		      double **LeadingJetSpectra, double **EventWideSpectra, double **EventWideSpectraLogBin,
+		      long int NumEvent, double *t, double *InvertPg, double *InvertPq, long int NumInverts,
 		      long int Mode, const gsl_rng *r){
 
   long int i,j,k,Ebin,LogEbin,TheChosen,CurrentFlavor,CurrentLabel,Death,EndEvent, CurrentMaxEbin;
@@ -37,11 +37,11 @@ void JetFragmentation(PSEmissionsList *emissions, PSEmissionsList *DaughterEmiss
   /*
     Momentum[4]={Polar,Azimuth,Efrac,SplitAngle}
    */
-  
+
   *(t) = 0;
   i = 0;
   j = 0;
-  
+
   //Before we start evolution, we log the histograms of the zero-th
   //order emission
   if((emissions->size)!=1){printf("What, more than one emission to start?\n");}
@@ -49,10 +49,10 @@ void JetFragmentation(PSEmissionsList *emissions, PSEmissionsList *DaughterEmiss
   while(i<NumRadii){
     RF = *(JetRadii+i);
 
-    DGLAPDownToAngle(emissions, DaughterEmissions, CurrentWTAaxis, &Angle, t, 
+    DGLAPDownToAngle(emissions, DaughterEmissions, CurrentWTAaxis, &Angle, t,
 		     params, RF, ParentMomentum, &ParentFlavor, &ParentLabel, &TheChosen,
 		     InvertPg, InvertPq, NumInverts, &EndEvent, Mode, r);
-    
+
     //Now we update the event wide histograms
     CurrentMaxEbin = 0;
     for(j=0; j < (emissions->size); j++){
@@ -61,20 +61,20 @@ void JetFragmentation(PSEmissionsList *emissions, PSEmissionsList *DaughterEmiss
       Ebin = (int)floor(NumEbins * Momentum[2] );
       if(Ebin>CurrentMaxEbin){
 	CurrentMaxEbin = Ebin;
-      }; 
+      };
       FindLogEbinStart = NumEbins*(1 - log(Momentum[2])/log(MinZBook) );
       if(FindLogEbinStart > 0){
 	LogEbin = (int)floor(FindLogEbinStart);
       }else{
 	LogEbin = 0;
-      }	
-      
+      }
+
       EventWideSpectra[i][Ebin] = EventWideSpectra[i][Ebin] + 1;
       EventWideSpectraLogBin[i][LogEbin] = EventWideSpectraLogBin[i][LogEbin] + 1;
     };//for
 
     LeadingJetSpectra[i][CurrentMaxEbin] = LeadingJetSpectra[i][CurrentMaxEbin] + 1;
-    
+
     //The very last splitting was not folded into the emissions.
     //we do that now, and resume evolution.
     UpdateEmissionList(emissions, DaughterEmissions, CurrentWTAaxis,
@@ -101,7 +101,7 @@ void JetFragmentation(PSEmissionsList *emissions, PSEmissionsList *DaughterEmiss
   long int ProgramMode = atoi(argv[6]);
 
   long int i,j;
-  
+
   char filenameInit[1000];
   char filenameLeadingJetSpectra[1000];
   char filenameEventWideSpectra[1000];
@@ -114,12 +114,12 @@ void JetFragmentation(PSEmissionsList *emissions, PSEmissionsList *DaughterEmiss
 
   begin = clock();
   printf("\n");
-  printf("Random seed: %d.\n",RANDOMSEED);
+  printf("Random seed: %ld.\n",RANDOMSEED);
 
    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   //Initialize Random number generator
-  gsl_rng * r = gsl_rng_alloc (gsl_rng_mt19937);//gsl_rng_taus  
+  gsl_rng * r = gsl_rng_alloc (gsl_rng_mt19937);//gsl_rng_taus
   gsl_rng_set(r,RANDOMSEED);
 
   //Initialize values for shower
@@ -128,7 +128,7 @@ void JetFragmentation(PSEmissionsList *emissions, PSEmissionsList *DaughterEmiss
   double *params, *JetRadii;
   JetRadii = &ActualJetRadii[0];
   params = &ActualParams[0];
-  
+
   /*
     We note the vales in params:
     *(params) = Minimum Energy Fraction or Zcut;
@@ -140,25 +140,25 @@ void JetFragmentation(PSEmissionsList *emissions, PSEmissionsList *DaughterEmiss
     *(params+6) = Minimum Mass Scale;
     */
 
-  
-  sprintf(filenameInit,"Initialize_Parton_Shower.txt"); 
+
+  sprintf(filenameInit,"Initialize_Parton_Shower.txt");
   LoadShowerParams(filenameInit, params, &NumRadii, JetRadii);
 
   *(params+4) = Q;
   *(params+5) = Rmax;
-  
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-  sprintf(filenameLeadingJetSpectra, "LeadingJetSpectra_rseed%d_Q%f_Rmax%f_ProgramMode%d_Flavor%d_Angle.txt",
-	  RANDOMSEED,Q,Rmax,ProgramMode,Flavor);
-  sprintf(filenameEventWideSpectra, "InclusiveSpectra_rseed%d_Q%f_Rmax%f_ProgramMode%d_Flavor%d_Angle.txt",
-	  RANDOMSEED,Q,Rmax,ProgramMode,Flavor);
-  sprintf(filenameEventWideSpectraLogBin, "InclusiveSpectraLogBin_rseed%d_Q%f_Rmax%f_ProgramMode%d_Flavor%d_Angle.txt",
-	  RANDOMSEED,Q,Rmax,ProgramMode,Flavor);
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  PSEmissionsList emissions, DaughterEmissions, EmissionsWithinJet; 
+  sprintf(filenameLeadingJetSpectra, "LeadingJetSpectra_rseed%ld_Q%f_Rmax%f_ProgramMode%ld_Flavor%ld_Angle.txt",
+	  RANDOMSEED,Q,Rmax,ProgramMode,Flavor);
+  sprintf(filenameEventWideSpectra, "InclusiveSpectra_rseed%ld_Q%f_Rmax%f_ProgramMode%ld_Flavor%ld_Angle.txt",
+	  RANDOMSEED,Q,Rmax,ProgramMode,Flavor);
+  sprintf(filenameEventWideSpectraLogBin, "InclusiveSpectraLogBin_rseed%ld_Q%f_Rmax%f_ProgramMode%ld_Flavor%ld_Angle.txt",
+	  RANDOMSEED,Q,Rmax,ProgramMode,Flavor);
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  PSEmissionsList emissions, DaughterEmissions, EmissionsWithinJet;
   double t,AveT,RND,Z;
   double CurrentWTAaxis[2];
 
@@ -173,7 +173,7 @@ void JetFragmentation(PSEmissionsList *emissions, PSEmissionsList *DaughterEmiss
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
   //Build Splitting Function Inversion
-  printf("Computing Inversion of Splitting Functions.\n" , 1 );
+  printf("Computing Inversion of Splitting Functions.\n");
   double *InvertPg,*InvertPq;
   long int NumInverts = SetNumInverts;
   InvertPg = (double *) malloc( (NumInverts+1) * sizeof(double ));
@@ -192,7 +192,7 @@ void JetFragmentation(PSEmissionsList *emissions, PSEmissionsList *DaughterEmiss
     EventWideSpectra[j] = (double *) malloc( ( TheNumEbins+1) * sizeof(double ));
     EventWideSpectraLogBin[j] = (double *) malloc( ( TheNumEbins+1) * sizeof(double ));
   };
-  
+
   for(j=0; j<(NumRadii+1); j++){
     for(i=0; i<(TheNumEbins+1); i++){
       LeadingJetSpectra[j][i]=0;
@@ -203,32 +203,32 @@ void JetFragmentation(PSEmissionsList *emissions, PSEmissionsList *DaughterEmiss
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  
+
   i=0;
   while(i<NUMEVENTS){
       t=0;
       //Generate An Event
-      JetFragmentation(&emissions, &DaughterEmissions, CurrentWTAaxis, JetRadii, 
+      JetFragmentation(&emissions, &DaughterEmissions, CurrentWTAaxis, JetRadii,
 		       NumRadii, params, TheNumEbins, LeadingJetSpectra, EventWideSpectra,
 		       EventWideSpectraLogBin, i+1, &t, InvertPg, InvertPq, NumInverts, ProgramMode, r);
       AveT = AveT + t;
       //This wipes out all the EmissionsList's, reseeds emissions with a parton pointed at the z axis with energy fraction 1, and flavor specified
       ReInitialize(&emissions, &DaughterEmissions, CurrentWTAaxis, Flavor, &t);
-      
+
       if(0==((i+1)%NUMEVENTSNoteWorking)){
-	printf("Working on Event %d\n" , (i+1) );
+	printf("Working on Event %ld\n" , (i+1) );
       };
       if(0==((i+1)%NUMEVENTSSave)){
 	  end = clock();
 	  time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-          printf("Saving Histograms at Event %d\n",(i+1));
+          printf("Saving Histograms at Event %ld\n",(i+1));
 	  printf("Average MC time: %f\n",AveT/( (double)(i+1) ));
 	  printf("Time spent so far seconds: %f\n",time_spent);
 	  printf("Time spent so far minutes: %f\n",time_spent/60);
 	  printf("Time spent so far hours: %f\n",time_spent/(60*60));
 	  printf("Time spent per event in seconds: %f\n",time_spent/(i+1));
 	  //SAVE EVENTS SO FAR
-	    
+
 
 	  WriteToDiskHistgramsFRAG(filenameLeadingJetSpectra, (i+1), NumRadii,
 				   TheNumEbins, LeadingJetSpectra, JetRadii, MinZBook,
