@@ -1,3 +1,9 @@
+# DGLAP parton shower / DN
+
+- Original DGLAP shower code by Duff Neill
+- Some modifications by Felix Ringer
+- Some code fixes and swig-pythonization by matplo
+
 # dependencies
 
 - CMake
@@ -6,10 +12,15 @@
 
 # compilation
 
+```
 ./scripts/build_dglap.sh
+```
 
-# DGLAP/DN
+# example
 
-- Original DGLAP shower code by Duff Neill; 
-- Some modifications by Felix Ringer
-- Some code fixes and swig-pythonization by matplo
+```
+cd test
+run_dglap_dn_test.sh --nev=1000
+```
+
+
