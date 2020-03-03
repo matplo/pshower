@@ -1,0 +1,6 @@
+find_package(GSL REQUIRED GSL::gslcblas)
+if (GSL_FOUND)
+	add_subdirectory(dn)
+else()
+	message(ERROR "no GSL no DGLAP by DN...")
+endif()
