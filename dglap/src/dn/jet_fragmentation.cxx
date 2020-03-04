@@ -1,6 +1,17 @@
 #include "jet_fragmentation.hh"
 #include <math.h>
 
+void test(double **LeadingJetSpectra)
+{
+  ;
+}
+
+double **doubleParray(long int n)
+{
+  double **p = (double **) malloc( (n+1) * sizeof(double *));
+  return p;
+}
+
 void JetFragmentation(PSEmissionsList *emissions, PSEmissionsList *DaughterEmissions, double *CurrentWTAaxis, double *JetRadii,
 		      long int NumRadii, double *params, long int NumEbins,
 		      double **LeadingJetSpectra, double **EventWideSpectra, double **EventWideSpectraLogBin,
