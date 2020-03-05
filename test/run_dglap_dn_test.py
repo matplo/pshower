@@ -21,11 +21,11 @@ NumTries=10000
 TheNumEbins=800
 
 def main():
-	# 101 ${nevents} 250 1.5708 1 1
+	# 101 ${nev} 250 1.5708 1 1
 	parser = argparse.ArgumentParser(description='dglap DN implemenation', prog=os.path.basename(__file__))
 	parser.add_argument('--initfile', type=str, default="Initialize_Parton_Shower.txt")
 	parser.add_argument('--seed', type=int, default=101)
-	parser.add_argument('--nevents', type=int, default=50000)
+	parser.add_argument('--nev', type=int, default=50000)
 	parser.add_argument('-Q', type=float, default=250)
 	parser.add_argument('--Rmax', type=float, default=1.5708)
 	parser.add_argument('--flavor', type=int, default=1)
@@ -111,7 +111,7 @@ def main():
 	EventWideSpectra = dn.doubleParray(NumRadii.value(), TheNumEbins)
 	EventWideSpectraLogBin = dn.doubleParray(NumRadii.value(), TheNumEbins)
 
-	for i in tqdm.tqdm(range(args.nevents)):
+	for i in tqdm.tqdm(range(args.nev)):
 		t.assign(0)
 		dn.JetFragmentation(emissions, DaughterEmissions, CurrentWTAaxis, JetRadii,
 							NumRadii.value(), params, TheNumEbins, LeadingJetSpectra, EventWideSpectra,
@@ -124,7 +124,7 @@ def main():
 		if (i+1) % NUMEVENTSSave == 0:
 			_save_intermediate = True
 
-		if args.nevents < NUMEVENTSSave and (i+1 == args.nevents):
+		if args.nev < NUMEVENTSSave and (i+1 == args.nev):
 			_save_intermediate = True
 
 		if i < 1:
