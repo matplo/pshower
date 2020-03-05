@@ -23,4 +23,19 @@ cd test
 ./run_dglap_dn_test.sh --nev=1000
 ```
 
+OR run the python version
+
+```
+cd test
+./run_dglap_dn_test.py --nev 1000
+```
+
+try `--help` for more options
+
+```
+./run_dglap_dn_test.py --help
+```
+
+
+
 
