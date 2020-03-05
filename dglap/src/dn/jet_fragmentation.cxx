@@ -6,9 +6,15 @@ void test(double **LeadingJetSpectra)
   ;
 }
 
-double **doubleParray(long int n)
+double **doubleParray(long int n, long int k)
 {
-  double **p = (double **) malloc( (n+1) * sizeof(double *));
+  double **p = (double **) malloc( (n + 1) * sizeof(double *));
+  for(long int i=0; i < n + 1; i++)
+  {
+    p[i] = (double *) malloc( ( k + 1 ) * sizeof(double ));
+    for (long int j=0; j < k + 1; j++)
+      p[i][j] = 0;
+  }
   return p;
 }
 

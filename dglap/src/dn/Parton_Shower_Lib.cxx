@@ -19,6 +19,15 @@
 #define RescaleAlphaFactor 1.0
 
 
+// MP
+static gsl_rng * r = gsl_rng_alloc (gsl_rng_mt19937);//gsl_rng_taus
+
+gsl_rng * reset_random_number_generator(long int rseed)
+{
+  gsl_rng_set(r, rseed);
+  return r;
+}
+
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
@@ -38,7 +47,7 @@
 double ComputeSplitAngle(double Q, double RI, double t, double  NF, double CA){
   double TanRIdiv2 = tan(RI/2);
   double RescaleT = t/RescaleAlphaFactor;
-  
+
   return 2*atan(TanRIdiv2*pow(Enum,6*PI*pow(as,-1)*(-1 + pow(Enum,((-11*CA + 2*NF)*RescaleT)/6.))*pow(11*CA - 2*NF,-1))*pow(Q*TanRIdiv2*pow(MZ,-1),-1 + pow(Enum,((-11*CA + 2*NF)*RescaleT)/6.)));
 
 };
@@ -47,7 +56,7 @@ double ComputeSplitAngle(double Q, double RI, double t, double  NF, double CA){
 double ComputeKTRunningCoupling(double Q, double RI, double t, double  NF, double CA){
   double TanRIdiv2 = tan(RI/2);
   double RescaleT = t/RescaleAlphaFactor;
-  
+
   return RescaleAlphaFactor*MZ*pow(Enum,6*PI*pow(as,-1)*(-1 + pow(Enum,((-11*CA + 2*NF)*RescaleT)/6.))*pow(11*CA - 2*NF,-1))*pow(Q*RI*pow(MZ,-1),pow(Enum,((-11*CA + 2*NF)*RescaleT)/6.));
 };
 
@@ -56,7 +65,7 @@ double ComputeKTRunningCoupling(double Q, double RI, double t, double  NF, doubl
 double AlphasIntegral(double Q, double RI, double RF, double NF, double TheCA){
   double TanRIdiv2 = tan(RI/2);
   double TanRFdiv2 = tan(RF/2);
- 
+
   return 6*log((6*PI + as*(11*TheCA - 2*NF)*log(Q*TanRIdiv2*pow(MZ,-1)))*pow(6*PI + as*(11*TheCA - 2*NF)*log(Q*TanRFdiv2*pow(MZ,-1)),-1))*pow(11*TheCA - 2*NF,-1);
 
 };
@@ -106,7 +115,7 @@ void PSemissions_append(PSEmissionsList *emissions, double *value, long int Part
   AddedIndex=emissions->size++;
   emissions->Flavor[AddedIndex] = PartonFlavor;
   emissions->Dead[AddedIndex] = PartonDead;
-  emissions->Polar[AddedIndex] = *(value); 
+  emissions->Polar[AddedIndex] = *(value);
   emissions->Azimuth[AddedIndex] = *(value+1);
   emissions->Efrac[AddedIndex] = *(value+2);
   emissions->ParentSplitAngle[AddedIndex] = *(value+3);
@@ -122,7 +131,7 @@ void PSemissions_edit(PSEmissionsList *emissions, long int index, double *value,
   // assign value to data at index
   emissions->Flavor[index] = PartonFlavor;
   emissions->Dead[index] = PartonDead;
-  emissions->Polar[index] = value[0]; 
+  emissions->Polar[index] = value[0];
   emissions->Azimuth[index] = value[1];
   emissions->Efrac[index] = value[2];
   emissions->ParentSplitAngle[index] = value[3];
@@ -201,10 +210,10 @@ void RetrieveParton(PSEmissionsList *emissions, long int TheChosen, double *Mome
 int PSemissions_double_capacity_if_full(PSEmissionsList *emissions) {
   if (emissions->size >= emissions->capacity) {
     // double vector->capacity and resize the allocated memory accordingly
-    printf("That is alot of emissions."); 
+    printf("That is alot of emissions.");
     printf(" Current Carrying Capacity: %ld.\n", (emissions->capacity)*2);
     emissions->capacity *= 2;
- 
+
     emissions->emissions_Label = (long int*) realloc(emissions->emissions_Label,sizeof(long int) * emissions->capacity * 1);
     emissions->Flavor = (long int*) realloc(emissions->Flavor,sizeof(long int) * emissions->capacity * 1);
     emissions->Dead = (long int*) realloc(emissions->Flavor,sizeof(long int) * emissions->capacity * 1);
@@ -304,7 +313,7 @@ double IntToZmaxPqTOqg(double Zmax, void *params){
   double CUTOFF = *(PointerToParams);
   double CF = *(PointerToParams+3);
   double Zmin = CUTOFF;
- 
+
   return (CF*(-4*Zmax + 4*Zmin + 4*log(Zmax) - 4*log(Zmin) + pow(Zmax,2) - pow(Zmin,2)))/2.;
 
 }
@@ -325,19 +334,19 @@ double PqTOqg(double Z, void *params){
 
 
 double LambertW(const double z) {
-  long int i; 
-  const double eps=4.0e-16, em1=0.3678794411714423215955237701614608; 
+  long int i;
+  const double eps=4.0e-16, em1=0.3678794411714423215955237701614608;
   double p,e,t,w;
   //  const long int dbgW=0;
 
   //  if (dbgW) fprintf(stderr,"LambertW: z=%g\n",z);
-  if (z<-em1 || isinf(z) || isnan(z)) { 
-    fprintf(stderr,"LambertW: bad argument %g, exiting.\n",z); exit(1); 
+  if (z<-em1 || isinf(z) || isnan(z)) {
+    fprintf(stderr,"LambertW: bad argument %g, exiting.\n",z); exit(1);
   }
   if (0.0==z) return 0.0;
   if (z<-em1+1e-4) { // series near -em1 in sqrt(q)
     double q=z+em1,r=sqrt(q),q2=q*q,q3=q2*q;
-    return 
+    return
      -1.0
      +2.331643981597124203363536062168*r
      -1.812187885639363490240191647568*q
@@ -351,20 +360,20 @@ double LambertW(const double z) {
   /* initial approx for iteration... */
   if (z<1.0) { /* series near 0 */
     p=sqrt(2.0*(2.7182818284590452353602874713526625*z+1.0));
-    w=-1.0+p*(1.0+p*(-0.333333333333333333333+p*0.152777777777777777777777)); 
-  } else 
+    w=-1.0+p*(1.0+p*(-0.333333333333333333333+p*0.152777777777777777777777));
+  } else
     w=log(z); /* asymptotic */
   if (z>3.0) w-=log(w); /* useful? */
   for (i=0; i<10; i++) { /* Halley iteration */
-    e=exp(w); 
+    e=exp(w);
     t=w*e-z;
     p=w+1.0;
-    t/=e*p-0.5*(p+1.0)*t/p; 
+    t/=e*p-0.5*(p+1.0)*t/p;
     w-=t;
     if (fabs(t)<eps*(1.0+fabs(w))) return w; /* rel-abs error */
   }
   /* should never get here */
-  fprintf(stderr,"LambertW: No convergence at z=%g, exiting.\n",z); 
+  fprintf(stderr,"LambertW: No convergence at z=%g, exiting.\n",z);
   exit(1);
 }
 
@@ -393,7 +402,7 @@ double ApproxPgToAll(double Z, void *params){
   double NF = *(PointerToParams+2);
 
   return -2.0*CA + NF/2.0 + (2.0*CA)/(1.0 - Z);
-  
+
 }
 
 double ApproxPgIntegrate(void *params){
@@ -404,7 +413,7 @@ double ApproxPgIntegrate(void *params){
   double NF = *(PointerToParams+2);
 
   return -((4.0*CA - NF)*(Zmax - Zmin))/2.0 - 2.0*CA*log(1.0 - Zmax) + 2.0*CA*log(1.0 - Zmin);
-  
+
 }
 
 double ApproxPgInvert(double RND, void *params){
@@ -416,7 +425,7 @@ double ApproxPgInvert(double RND, void *params){
 
 return (4.0*CA - NF + 4.0*CA*ProductLog(-((4.0*CA - NF)*pow(1.0 - Zmax,RND)*pow(1.0 - Zmin,1.0 - RND))/
 					(4.0*CA*pow(Enum,((4.0*CA - NF)*(1.0 - RND*(Zmax - Zmin) - Zmin))/(4.0*CA)))))/(4.0*CA - NF);
-  
+
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -428,7 +437,7 @@ double ApproxPqToqg(double Z, void *params){
   double CF = *(PointerToParams+3);
 
   return -CF + (2.0*CF)/(Z);
-  
+
 }
 
 double ApproxPqIntegrate(void *params){
@@ -438,7 +447,7 @@ double ApproxPqIntegrate(void *params){
   double CF = *(PointerToParams+3);
 
   return -(CF*(Zmax - Zmin - 2.0*log(Zmax) + 2.0*log(Zmin)));
-  
+
 }
 
 double ApproxPqInvert(double RND, void *params){
@@ -448,7 +457,7 @@ double ApproxPqInvert(double RND, void *params){
   double CF = *(PointerToParams+3);
 
 return -2.0*ProductLog(-pow(pow(Enum,-(RND*Zmax) - Zmin + RND*Zmin)*pow(Zmax,2.0*RND)*pow(Zmin,2.0 - 2.0*RND),0.5)/2.0);
-  
+
 }
 
 
@@ -462,7 +471,7 @@ double InvertPgToALLDistr(double RND, void *params){
   double *PointerToParams = (double *) params;
   double CUTOFF = *(PointerToParams);
   double CA = *(PointerToParams+1);
- 
+
   //We iterate at least NewtonsInteration times
   //It often takes some time before we move away from the initial value
   //so we only increase the interation variable once we drop below
@@ -479,7 +488,7 @@ double InvertPgToALLDistr(double RND, void *params){
     if(accuracy < 0.0001){i = i + 1;};
     CurrentZ = NewZ;
   }
-    
+
   //  if(CurrentZ>0.9){
   //    CurrentZ = BisectionForGluon(RND, params);
   //  }
@@ -493,7 +502,7 @@ double InvertPqToALLDistr(double RND, void *params){
   double accuracy, f, df, CurrentZ, NewZ;
   double *PointerToParams = (double *) params;
   double CUTOFF = *(PointerToParams);
-  
+
   //We iterate at least NewtonsInteration times
   //It often takes some time before we move away from the initial value
   //so we only increase the interation variable once we drop below
@@ -557,7 +566,7 @@ void TransverseMomentumAngles(double SplitAng, double Z, double *TheAngles){
   }
   //  *(TheAngles) = SplitAng - NewTheta;//THIS IS THE ANGLE THAT THE DAUGHTER WITH MOMENTUM FRACTION Z MAKES TO THE PARENT
   //  *(TheAngles+1) = NewTheta;
-  
+
   *(TheAngles) = SplitAng-CurrentTheta;//THIS IS THE ANGLE THAT THE DAUGHTER WITH MOMENTUM FRACTION Z MAKES TO THE PARENT
   *(TheAngles+1) = CurrentTheta;
   return;
@@ -570,7 +579,7 @@ void TransverseMomentumAngles(double SplitAngle, double Z, double *TheAngles){
 
   double ZfracThetaToParent = acos((Z + (1.0 - Z)*cos(SplitAngle))/sqrt(1.0 - 2.0*(1 - Z)*Z*(1.0 - cos(SplitAngle))));
   double OnemZfracThetaToParent = SplitAngle - ZfracThetaToParent;
-  
+
   *(TheAngles) = ZfracThetaToParent;//THIS IS THE ANGLE THAT THE DAUGHTER WITH MOMENTUM FRACTION Z MAKES TO THE PARENT
   *(TheAngles+1) = OnemZfracThetaToParent;
   return;
@@ -588,7 +597,7 @@ void DetermineSplittingDirections(double *AngularPos, double *Daughter1, double 
   double NormalA[3], NormalB[3], RandomBasisVec[3];
   double NORMALIZEIT, DotToRandom, RND;
   double TransMomAngles[2]={0,0};
-  
+
     TransverseMomentumAngles(SplitAngle,Z,TransMomAngles);
 
     ParentDir[0] = sin(AngularPos[0])*cos(AngularPos[1]);
@@ -601,10 +610,10 @@ void DetermineSplittingDirections(double *AngularPos, double *Daughter1, double 
     RandomBasisVec[0] = 2 * gsl_rng_uniform(r)-1;
     RandomBasisVec[1] = 2 * gsl_rng_uniform(r)-1;
     RandomBasisVec[2] = 2 * gsl_rng_uniform(r)-1;
-      
+
     DotToRandom = RandomBasisVec[0]*ParentDir[0] + RandomBasisVec[1]*ParentDir[1] + RandomBasisVec[2]*ParentDir[2];
     NORMALIZEIT = sqrt( pow(DotToRandom*ParentDir[0]-RandomBasisVec[0],2.)+pow(DotToRandom*ParentDir[1]-RandomBasisVec[1],2.)+pow(DotToRandom*ParentDir[2]-RandomBasisVec[2],2.)  );
-      
+
     NormalA[0] = (DotToRandom*ParentDir[0]-RandomBasisVec[0])/ NORMALIZEIT;
     NormalA[1] = (DotToRandom*ParentDir[1]-RandomBasisVec[1])/ NORMALIZEIT;
     NormalA[2] = (DotToRandom*ParentDir[2]-RandomBasisVec[2])/ NORMALIZEIT;
@@ -616,11 +625,11 @@ void DetermineSplittingDirections(double *AngularPos, double *Daughter1, double 
     NormalB[0] = ParentDir[2]*NormalA[1] - NormalA[2]*ParentDir[1];
     NormalB[1] = ParentDir[0]*NormalA[2] - NormalA[0]*ParentDir[2];
     NormalB[2] = ParentDir[1]*NormalA[0] - NormalA[1]*ParentDir[0];
-  
+
     RND = 2 * PI * gsl_rng_uniform(r);
 
     //Sum of these two vectors have zero transverse momentum
-    //compared to direction of the parent 
+    //compared to direction of the parent
     //angle between them is the splitting angle determined by the evolution
     Daughter1dir[0] = cos( TransMomAngles[0] ) * ParentDir[0] + sin( TransMomAngles[0] ) *( cos(RND) * NormalA[0] + sin(RND) * NormalB[0]);
     Daughter1dir[1] = cos( TransMomAngles[0] ) * ParentDir[1] + sin( TransMomAngles[0] ) *( cos(RND) * NormalA[1] + sin(RND) * NormalB[1]);
@@ -646,13 +655,13 @@ return;
 double ComputeVirtuality(double Efrac, double Q, double Z, double SplitAngle){
 
   return  Efrac * Q * sqrt( (2.0) * Z * (1.0-Z) * ( 1.0 - cos( SplitAngle) )  );
-  
+
 }
 
 double ComputeKT(double Efrac, double Q, double Z, double SplitAngle){
 
   return  (Q*Efrac*Z*(1.0-Z)*sin(SplitAngle));///sqrt( 1.0 - 2.0*Z*(1.0-Z)*( 1.0 - cos(SplitAngle) ) );
-  
+
 }
 
 double MinZFunction(double Efrac, double Q, double PhysSplitAngle, double MinQ, double p, double q ){
@@ -669,8 +678,8 @@ double MinZFunction(double Efrac, double Q, double PhysSplitAngle, double MinQ, 
 /*
 ApproxPqInvert(RND, params)
 ApproxPgInvert(RND, params)
-PgTOgg(*(Z), params) 
-PgTOqqbar(*(Z), params) 
+PgTOgg(*(Z), params)
+PgTOqqbar(*(Z), params)
  */
 
 void FindAZwithVeto(long int CurrentFlavor, double Efrac, double *Daughter1, double *Daughter2,
@@ -692,7 +701,7 @@ void FindAZwithVeto(long int CurrentFlavor, double Efrac, double *Daughter1, dou
       Daughter1[2] = *(Z) * Efrac;
       Daughter2[2] = (1.0-*(Z)) * Efrac;
 
-      
+
       RND = gsl_rng_uniform_pos(r);
       //Now we decide whether it splits to qqbar or g
       if( RND < ( PgTOgg(*(Z), params) )/( PgTOgg(*(Z), params) + PgTOqqbar(*(Z), params) ) ){
@@ -706,7 +715,7 @@ void FindAZwithVeto(long int CurrentFlavor, double Efrac, double *Daughter1, dou
       //We chose a quark! Fun!
       RND = gsl_rng_uniform_pos(r);
       *(Z) = ApproxPqInvert(RND, params);
-      
+
       Daughter1[2] = *(Z) * Efrac;//THIS IS THE GLUON
       Daughter2[2] = (1.0-*(Z)) * Efrac;//This is the quark or anti-quark
 
@@ -753,14 +762,14 @@ We note the vales in params:
   Rmax = *(params+5);
   MinQ = *(params+6);
 
-  
+
   MaxEffAlphas = Alphas( MinQ, NF, CA)/ (PI);
 
   CanSplit = -1;
   TotalApproxPInt = 0.0;
   MaxAngle = *(Angle);
-  
-  for(i=0;i< (emissions->size);i++){    
+
+  for(i=0;i< (emissions->size);i++){
     if( (PSemissions_get_Death(emissions, i ) == 0)  ){
 
       //This array is important, it allows us to find for the given ActiveEmission
@@ -770,7 +779,7 @@ We note the vales in params:
       //If it is not on that list, it can't split
       CanSplit = CanSplit + 1;
       TranslateActiveEmissions[CanSplit] = i;
-      
+
       if( PSemissions_get_Flavor(emissions, i) == 0){
 	ThePartonPhaseSpace[CanSplit] = ApproxPgInt; //HAVE TO REMEMBER TO INDEX BY CanSplit here
       }else{
@@ -791,7 +800,7 @@ We note the vales in params:
   NumberOfTries = 1;
   while(FoundaZ==0){
     CoinFlipForEmission = gsl_rng_uniform_pos(r);
-  
+
     i=-1;
     while(i < (CanSplit+1) ){
       //Probability for i-th dipole
@@ -806,7 +815,7 @@ We note the vales in params:
 	CoinFlipForEmission = CoinFlipForEmission-prob;
       };//ELSEIF
     };//while
-  
+
     Efrac = PSemissions_get_Efrac(emissions, *(TheChosen) );
     AngularPos[0] = PSemissions_get_Polar(emissions, *(TheChosen) );
     AngularPos[1] = PSemissions_get_Azimuth(emissions, *(TheChosen) );
@@ -817,7 +826,7 @@ We note the vales in params:
     //Thus we eval alpha_s at its largest value in the shower
     DT = - log( gsl_rng_uniform_pos(r)) /  ( TotalApproxPInt );
     TESTT = *(t) + DT;
-      
+
     SplitScale = Q*tan(Rmax/2.0)*pow(Enum, -TESTT/MaxEffAlphas);
 
     if(Mode == 1){
@@ -828,7 +837,7 @@ We note the vales in params:
     };
 
     //Now we determine the energy fraction
-    FindAZwithVeto(ActiveEmissionFlavor, Efrac, Daughter1, Daughter2, 
+    FindAZwithVeto(ActiveEmissionFlavor, Efrac, Daughter1, Daughter2,
 		   AssignFlavor, &Z, params, r);
 
     //Which parton is the winner-takes-all axis of the splitting?
@@ -837,27 +846,27 @@ We note the vales in params:
       WTA2 = 0;
     }else{
       WTA1 = 0;
-      WTA2 = 1;     
+      WTA2 = 1;
     };
 
     //This is the Sudakov veto step
-    
+
     CurrentAlphas = Alphas(SplitScale, NF, CA)/ (PI);
-    
+
     if(ActiveEmissionFlavor == 0){
       TruePhaseSpace = (UnitStep(SplitScale - MinQ) * CurrentAlphas *(PgTOgg(Z, params)+PgTOqqbar(Z, params)));
-      
+
       TestPhaseSpace = MaxEffAlphas * ApproxPgToAll(Z, params);
     }else{
       TruePhaseSpace = (UnitStep(SplitScale - MinQ) * CurrentAlphas * PqTOqg(Z, params));
-      
+
       TestPhaseSpace = MaxEffAlphas * ApproxPqToqg(Z, params);
     };
-    
+
     RND = gsl_rng_uniform_pos(r);
 
     //Now perform veto test as to whether to keep the emission
-    
+
     if( (RND < (TruePhaseSpace/TestPhaseSpace)) ){
       FoundaZ = 1;//Note that the default value is 0, we don't need an else statement
       *(Angle) = PhysSplitAngle;
@@ -869,7 +878,7 @@ We note the vales in params:
       //When either of these daughters split, the splitting will be at a smaller angle
       Daughter1[3] = PhysSplitAngle;
       Daughter2[3] = PhysSplitAngle;
-      
+
       PartonADead = 0;
       PartonBDead = 0;
       if(Daughter1[2]>MinZ){
@@ -882,12 +891,12 @@ We note the vales in params:
       }else{
 	PartonBDead = 1;
       }
-      PSemissions_edit(DaughterEmissions, 0, Daughter1, AssignFlavor[0], PartonADead, WTA1); 
+      PSemissions_edit(DaughterEmissions, 0, Daughter1, AssignFlavor[0], PartonADead, WTA1);
       PSemissions_edit(DaughterEmissions, 1, Daughter2, AssignFlavor[1], PartonBDead, WTA2);
     }
   }//WHILE
 
- 
+
   return;
 
 }
@@ -896,12 +905,12 @@ We note the vales in params:
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
- 
+
 //We choose an emission, and compute its splitting
 void BuildSplitFunctionInversion(double *InvertPg, double *InvertPq, long int NumInverts, double *params, const gsl_rng *r){
   long int i;
   double Z,RND;
-  
+
   printf("For Gluon.....\n"  );
   for(i=0; i<NumInverts;i=i+1){
     RND = (double)( i )/(double)( NumInverts );
@@ -946,8 +955,8 @@ void SplitSelectedParton(PSEmissionsList *emissions,  PSEmissionsList *DaughterE
   TotalP = 0;
   //First we must establish the total phase space to radiate
   CanSplit = -1;
-  
-  for(i=0;i< (emissions->size);i++){    
+
+  for(i=0;i< (emissions->size);i++){
     if( (PSemissions_get_Death(emissions, i ) == 0)  ){
 
       //This array is important, it allows us to find for the given ActiveEmission
@@ -957,7 +966,7 @@ void SplitSelectedParton(PSEmissionsList *emissions,  PSEmissionsList *DaughterE
       //If it is not on that list, it can't split
       CanSplit = CanSplit + 1;
       TranslateActiveEmissions[CanSplit] = i;
-      
+
       if( PSemissions_get_Flavor(emissions, i) == 0){
 	ThePartonPhaseSpace[CanSplit] = Pg; //HAVE TO REMEMBER TO INDEX BY CanSplit here
       }else{
@@ -978,7 +987,7 @@ void SplitSelectedParton(PSEmissionsList *emissions,  PSEmissionsList *DaughterE
   *(t) = *(t) + DT;
 
   CoinFlipForEmission = gsl_rng_uniform_pos(r);
-  
+
   i=-1;
   while(i < (CanSplit+1) ){
     //Probability for i-th dipole
@@ -1026,9 +1035,9 @@ void SplitSelectedParton(PSEmissionsList *emissions,  PSEmissionsList *DaughterE
 	WTA2 = 0;
       }else{
 	WTA1 = 0;
-	WTA2 = 1;     
+	WTA2 = 1;
       }
-      
+
 	RND = gsl_rng_uniform_pos(r);
 	//Now we decide whether it splits to qqbar or g
 	if( RND < ( PgTOgg(Z, params) )/( PgTOgg(Z, params) + PgTOqqbar(Z, params) ) ){
@@ -1052,7 +1061,7 @@ void SplitSelectedParton(PSEmissionsList *emissions,  PSEmissionsList *DaughterE
       WTA2 = 0;
     }else{
       WTA1 = 0;
-      WTA2 = 1;     
+      WTA2 = 1;
     }
 
     AssignFlavor[0] = 0;
@@ -1075,7 +1084,7 @@ void SplitSelectedParton(PSEmissionsList *emissions,  PSEmissionsList *DaughterE
     PartonBDead = 1;
   }
 
-  PSemissions_edit(DaughterEmissions, 0, Daughter1, AssignFlavor[0], PartonADead, WTA1); 
+  PSemissions_edit(DaughterEmissions, 0, Daughter1, AssignFlavor[0], PartonADead, WTA1);
   PSemissions_edit(DaughterEmissions, 1, Daughter2, AssignFlavor[1], PartonBDead, WTA2);
 
   return;
@@ -1111,7 +1120,7 @@ void UpdateEmissionList(PSEmissionsList *emissions, PSEmissionsList *DaughterEmi
   //If the parent is the WTA axis, then one of the daughters becomes the WTA axis.
   //Otherwise, no one is the WTA axis.
   //Daughter 1 replaces the parent, the other daughter is added to the list of emissions.
-  PSemissions_edit(emissions, TheChosen, Daughter1, Daughter1Flavor, Daughter1Death, *(ParentLabel) * Daughter1Label); 
+  PSemissions_edit(emissions, TheChosen, Daughter1, Daughter1Flavor, Daughter1Death, *(ParentLabel) * Daughter1Label);
   PSemissions_append(emissions, Daughter2, Daughter2Flavor, Daughter2Death, *(ParentLabel) * Daughter2Label);
 
   if( (*(ParentLabel) == 1)&&(Daughter1[2]>=Daughter2[2]) ){
@@ -1130,7 +1139,7 @@ void UpdateEmissionList(PSEmissionsList *emissions, PSEmissionsList *DaughterEmi
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 
-void DGLAPDownToAngle(PSEmissionsList *emissions, PSEmissionsList *DaughterEmissions, double *CurrentWTAaxis, double *Angle, double *t, 
+void DGLAPDownToAngle(PSEmissionsList *emissions, PSEmissionsList *DaughterEmissions, double *CurrentWTAaxis, double *Angle, double *t,
 		      double *params, double RF, double *ParentMomentum, long int *ParentFlavor, long int *ParentLabel, long int *TheChosen,
 		      double *InvertPg, double *InvertPq, long int NumInverts, long int *EndEvent, long int Mode, const gsl_rng *r){
   double FinalT, DT, MinZ,CA,NF,CF,Q,Rmax,MinQ;
@@ -1141,7 +1150,7 @@ void DGLAPDownToAngle(PSEmissionsList *emissions, PSEmissionsList *DaughterEmiss
   Q = *(params+4);
   Rmax = *(params+5);
   MinQ = *(params+6);
-  
+
   //We note that t is defined to be:
   //t(RI,RF) = - Int[as(m)/m,{m,Q*RI,Q*RF}], RF < RI
   FinalT = AlphasIntegral(Q, Rmax, RF, NF, CA);
@@ -1172,7 +1181,7 @@ void DGLAPDownToAngle(PSEmissionsList *emissions, PSEmissionsList *DaughterEmiss
     SplitSelectedParton(emissions, DaughterEmissions, Angle, t,
 			TheChosen, params, r, EndEvent, Mode,
 			InvertPg, InvertPq, NumInverts);
-  
+
 
     //We do record the parent
     *(ParentMomentum) = PSemissions_get_Polar(emissions, *(TheChosen));
@@ -1185,8 +1194,8 @@ void DGLAPDownToAngle(PSEmissionsList *emissions, PSEmissionsList *DaughterEmiss
   }//WHILE
 
   //We exit the While loop once we have a splitting below the angular scale RF
-  //Now we have saved all the generated emissions so far, and in particular, the 
-  //ParentMomentum and ParentFlavor of the last parton that split, and the structure of the Daughters 
+  //Now we have saved all the generated emissions so far, and in particular, the
+  //ParentMomentum and ParentFlavor of the last parton that split, and the structure of the Daughters
   //the parent split into
   //We DO NOT add the last splitting to the emissions list, though we record its structure
   //in DaughterEmissions, since this splitting went below the resolution scale
@@ -1200,7 +1209,7 @@ void DGLAPDownToAngle(PSEmissionsList *emissions, PSEmissionsList *DaughterEmiss
 ////////////////////////////////////////////////////////////////
 
 
-void DGLAPByVetoDownToAngle(PSEmissionsList *emissions, PSEmissionsList *DaughterEmissions, double *CurrentWTAaxis, double *Angle, double *t, 
+void DGLAPByVetoDownToAngle(PSEmissionsList *emissions, PSEmissionsList *DaughterEmissions, double *CurrentWTAaxis, double *Angle, double *t,
 			    double *params, double RF, double *ParentMomentum, long int *ParentFlavor, long int *ParentLabel, long int *TheChosen,
 			    long int *EndEvent, long int Mode, const gsl_rng *r){
   double FinalT, DT, MinZ,CA,NF,CF,Q,Rmax,MinQ;
@@ -1211,7 +1220,7 @@ void DGLAPByVetoDownToAngle(PSEmissionsList *emissions, PSEmissionsList *Daughte
   Q = *(params+4);
   Rmax = *(params+5);
   MinQ = *(params+6);
-  
+
   //We note that t is defined to be:
   //t(RI,RF) = - Int[as(m)/m,{m,Q*RI,Q*RF}], RF < RI
   FinalT = AlphasIntegral(Q, Rmax, RF, NF, CA);
@@ -1240,7 +1249,7 @@ void DGLAPByVetoDownToAngle(PSEmissionsList *emissions, PSEmissionsList *Daughte
 
 
     SplitSelectedPartonWithVeto(emissions, DaughterEmissions, Angle, t, TheChosen, params, r, EndEvent, Mode);
-  
+
 
     //We do record the parent
     *(ParentMomentum) = PSemissions_get_Polar(emissions, *(TheChosen));
@@ -1253,8 +1262,8 @@ void DGLAPByVetoDownToAngle(PSEmissionsList *emissions, PSEmissionsList *Daughte
   }//WHILE
 
   //We exit the While loop once we have a splitting below the angular scale RF
-  //Now we have saved all the generated emissions so far, and in particular, the 
-  //ParentMomentum and ParentFlavor of the last parton that split, and the structure of the Daughters 
+  //Now we have saved all the generated emissions so far, and in particular, the
+  //ParentMomentum and ParentFlavor of the last parton that split, and the structure of the Daughters
   //the parent split into
   //We DO NOT add the last splitting to the emissions list, though we record its structure
   //in DaughterEmissions, since this splitting went below the resolution scale
@@ -1293,11 +1302,11 @@ void WriteToDiskHistgramsFRAG(char filename[1000], long int TotalNumEvents, long
 	  fprintf(OutputFile, "%f,", Q);
 	  fprintf(OutputFile, "%f},", Rmax);
 	  fprintf(OutputFile, "{");
-	  
+
 	  /////////////////////////////////////////////////////
 	  for(j=0;j<NumofRadii;j++){
 	    fprintf(OutputFile, "{%f,", Radii[j]);
-      
+
 
 	    /////////////////////////////////////////////////////
 	    fprintf(OutputFile, "{");
@@ -1309,7 +1318,7 @@ void WriteToDiskHistgramsFRAG(char filename[1000], long int TotalNumEvents, long
 	      }
 	      CurrentBin = BINS[j][k]/( (double)(TotalNumEvents) );
 	      fprintf(OutputFile, "{%e,%e}", CurrentZ, CurrentBin);
-	      
+
 	      if( k<(NumBins-1) ){//more zbins to go!
 		fprintf(OutputFile, "," );
 	      }//Else we do not need the comma, list is ending
@@ -1317,7 +1326,7 @@ void WriteToDiskHistgramsFRAG(char filename[1000], long int TotalNumEvents, long
 	    fprintf(OutputFile, "}");//This ends the Energy/Angle bins
 	    /////////////////////////////////////////////////////;
 
-	    fprintf(OutputFile, "}" ); //This ends this radius 
+	    fprintf(OutputFile, "}" ); //This ends this radius
 	    if( j<(NumofRadii-1) ){//more radii to go!
 	      fprintf(OutputFile, "," );
 	    }//Else we have no more radii, so we don't need comma
@@ -1441,32 +1450,32 @@ void LoadShowerParams(char filename[1000], double *params, long int *NumRadii, d
     nread = getline(&CurrentLine, &len, InitializationFile);
     if((nread == -1)||(nread == 0)){printf("BAD INITIALIZATION FILE.\n");exit(1);}
     CleanString(CurrentLine);
-    *(params+6) = atof(CurrentLine);      
+    *(params+6) = atof(CurrentLine);
     //Number of Jet Radii
     nread = getline(&CurrentLine, &len, InitializationFile);
     if((nread == -1)||(nread == 0)){printf("BAD INITIALIZATION FILE.\n");exit(1);}
     CleanString(CurrentLine);
-    *(NumRadii) = atoi(CurrentLine); 
-				       
+    *(NumRadii) = atoi(CurrentLine);
+
     //We now read in all the jet radii that the evolution will stop at and book
     k = 0;
     if(*(NumRadii)>99){printf("TOO MANY RADII.\n");exit(1);}
     printf("Fragmentation spectra With %ld Radii\n",*(NumRadii));
-  
+
     while(k < *(NumRadii)){
       nread = getline(&CurrentLine, &len, InitializationFile);
       if((nread == -1)||(nread == 0)){printf("BAD INITIALIZATION FILE.\n");exit(1);}
       CleanString(CurrentLine);
-      *(JetRadii+k) = atof(CurrentLine);	
+      *(JetRadii+k) = atof(CurrentLine);
       printf("Radius: %f\n",*(JetRadii+k));
       k++;
-    };   
-	     
-  	
+    };
+
+
 
 	fclose(InitializationFile);
 	InitializationFile=NULL;
-      
+
   }
   return;
 }

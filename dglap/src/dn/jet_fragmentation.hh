@@ -6,7 +6,7 @@
 
 void test(double **LeadingJetSpectra);
 
-double **doubleParray(long int n);
+double **doubleParray(long int n, long int k);
 
 void JetFragmentation(PSEmissionsList *emissions, PSEmissionsList *DaughterEmissions, double *CurrentWTAaxis, double *JetRadii,
 		      long int NumRadii, double *params, long int NumEbins,

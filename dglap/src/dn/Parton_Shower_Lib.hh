@@ -22,6 +22,9 @@ typedef struct {
   double *ParentSplitAngle;
 } PSEmissionsList;
 
+// MP
+gsl_rng * reset_random_number_generator(long int rseed);
+
 int PSemissions_double_capacity_if_full(PSEmissionsList *emissions);
 
 void PSemissions_init(PSEmissionsList *emissions);
