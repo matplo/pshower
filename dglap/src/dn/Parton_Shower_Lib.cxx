@@ -751,8 +751,8 @@ void FindAZwithVeto(long int CurrentFlavor, double Efrac, double *Daughter1, dou
    }
  } else {
       //We chose a quark! Fun!
-  if (ExtraParameters::instance().gluon_splits_only())
-    printf("[w] current flavor - quark?: %ld but gluon only splits selected\n", CurrentFlavor  );
+  // if (ExtraParameters::instance().gluon_splits_only())
+  //  printf("[w] current flavor - quark?: %ld but gluon only splits selected\n", CurrentFlavor  );
   RND = gsl_rng_uniform_pos(r);
   *(Z) = ApproxPqInvert(RND, params);
 
@@ -1098,8 +1098,8 @@ void SplitSelectedParton(PSEmissionsList *emissions,  PSEmissionsList *DaughterE
  }
 } else {
     //We chose a quark! Fun!
-  if (ExtraParameters::instance().gluon_splits_only())
-    printf("[w] current flavor - quark?: %ld but gluon only splits selected\n", CurrentFlavor  );
+  // if (ExtraParameters::instance().gluon_splits_only())
+  //   printf("[w] current flavor - quark?: %ld but gluon only splits selected\n", CurrentFlavor  );
   FoundaZ = 0;
   RND = gsl_rng_uniform_pos(r);
   Z = *(InvertPq + (long int)floor(RND*(double)(NumInverts)) );
