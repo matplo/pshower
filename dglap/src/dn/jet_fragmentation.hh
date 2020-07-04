@@ -8,6 +8,8 @@ void test(double **LeadingJetSpectra);
 
 double **doubleParray(long int n, long int k);
 
+void dump_emissions_csv(const char *fname);
+
 void JetFragmentation(PSEmissionsList *emissions, PSEmissionsList *DaughterEmissions, double *CurrentWTAaxis, double *JetRadii,
 		      long int NumRadii, double *params, long int NumEbins,
 		      double **LeadingJetSpectra, double **EventWideSpectra, double **EventWideSpectraLogBin,

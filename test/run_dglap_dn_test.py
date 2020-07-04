@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import argparse
 import os
@@ -20,6 +20,31 @@ SetNumInverts=10000000
 NumTries=10000
 TheNumEbins=800
 
+import csv
+
+def dict_from_MapSD(e):
+	d = {}
+	for _k in e:
+		d[_k] = e[_k] 
+	return d
+
+def write_emissions_to_a_file(fname, emissions):
+	if len(emissions) > 0:
+		fieldnames = [k for k in emissions[0]]
+	else:
+		return
+	if not os.path.exists(fname):
+		with open(fname, 'w', newline='') as csvfile:
+			writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+			writer.writeheader()
+
+	dn.dump_emissions_csv(fname)
+	# with open(fname, 'a', newline='') as csvfile:
+	# 	writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+	# 	for e in emissions:
+	# 		d = dict_from_MapSD(e)
+	# 		writer.writerow(d)
+
 def main():
 	# 101 ${nev} 250 1.5708 1 1
 	parser = argparse.ArgumentParser(description='dglap DN implemenation', prog=os.path.basename(__file__))
@@ -34,11 +59,17 @@ def main():
 	parser.add_argument('--filenameLeadingJetSpectra', default='', type=str)
 	parser.add_argument('--filenameEventWideSpectra', default='', type=str)
 	parser.add_argument('--filenameEventWideSpectraLogBin', default='', type=str)
+	parser.add_argument('--csv', help='csv output for emissions', default='', type=str)
 
 	args = parser.parse_args()
 
 	if args.gg_only:
-		dn.ExtraParameters.instance().set_gluon_splits_only(True)
+		dn.ExtraParameters.instance().set_flag("ggonly")
+	csv_output_file = None
+	if len(args.csv) > 0:
+		if os.path.exists(args.csv):
+			os.remove(args.csv)
+		dn.ExtraParameters.instance().set_flag("get_emissions")
 
 	params = dn.doubleArray(10)
 	NumRadii = dn.longintp()
@@ -86,16 +117,18 @@ def main():
 
 	emissions = dn.PSEmissionsList()
 	DaughterEmissions = dn.PSEmissionsList()
-	EmissionsWithinJet = dn.PSEmissionsList()
+	# not used here
+	# EmissionsWithinJet = dn.PSEmissionsList()
 
 	dn.PSemissions_init(emissions)
 	dn.PSemissions_init(DaughterEmissions)
-	dn.PSemissions_init(EmissionsWithinJet)
+	# dn.PSemissions_init(EmissionsWithinJet)
 
 	t = dn.doublep()
 	AveT = dn.doublep()
 	RND = dn.doublep()
-	Z = dn.doublep()
+	# not used 
+	# Z = dn.doublep()
 	CurrentWTAaxis = dn.doubleArray(2)
 
 	dn.ReInitialize(emissions, DaughterEmissions, CurrentWTAaxis, args.flavor, t);
@@ -144,7 +177,16 @@ def main():
 			dn.WriteToDiskHistgramsFRAG(args.filenameEventWideSpectraLogBin, (i+1), NumRadii.value(),
 				TheNumEbins, EventWideSpectraLogBin, JetRadii, dn.MinZBook,
 				args.flavor, params, 0);
+	
+		if i > 0 and i % 100 == 0:
+			if len(args.csv) > 0:
+				write_emissions_to_a_file(args.csv, dn.ExtraOutput.instance().emissions)
+				dn.ExtraOutput.instance().emissions.clear()
 
+	if len(args.csv) > 0:
+		write_emissions_to_a_file(args.csv, dn.ExtraOutput.instance().emissions)
+		dn.ExtraOutput.instance().emissions.clear()
+		print('[i] csv file:', args.csv)
 	print('[i] done.')
 
 

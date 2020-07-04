@@ -18,6 +18,29 @@ double **doubleParray(long int n, long int k)
   return p;
 }
 
+static const char *ccMomTitle[] = {"Polar", "Azimuth", "Efrac", "SplitAngle"};
+static const char *ccParentMomTitle[] = {"pPolar", "pAzimuth", "pEfrac", "pSplitAngle"};
+
+#include <cstdio>
+void dump_emissions_csv(const char *fname)
+{
+  FILE* fp = fopen(fname, "a");
+  for (auto &e : ExtraOutput::instance().emissions)
+  {
+    auto it = e.begin();
+    while (it != e.end())
+    {
+      fprintf(fp, "%f ", it->second);
+      it++;
+      if (it == e.end())
+        fprintf(fp, "\n");
+      else
+        fprintf(fp, ",");
+    }
+  }
+  fclose(fp);
+}
+
 void JetFragmentation(PSEmissionsList *emissions, PSEmissionsList *DaughterEmissions, double *CurrentWTAaxis, double *JetRadii,
 		      long int NumRadii, double *params, long int NumEbins,
 		      double **LeadingJetSpectra, double **EventWideSpectra, double **EventWideSpectraLogBin,
@@ -36,6 +59,9 @@ void JetFragmentation(PSEmissionsList *emissions, PSEmissionsList *DaughterEmiss
   i = 0;
   j = 0;
 
+  // user responsibility to clear emissions
+  // ExtraOutput::instance().emissions.clear();
+
   //Before we start evolution, we log the histograms of the zero-th
   //order emission
   if((emissions->size)!=1){printf("What, more than one emission to start?\n");}
@@ -51,6 +77,28 @@ void JetFragmentation(PSEmissionsList *emissions, PSEmissionsList *DaughterEmiss
     CurrentMaxEbin = 0;
     for(j=0; j < (emissions->size); j++){
       RetrieveParton(emissions, j, Momentum, &CurrentFlavor, &Death, &CurrentLabel);
+
+      if (ExtraParameters::instance().is_flag_set("get_emissions"))
+      {
+        std::map<std::string, double> _e;
+        _e["NumEvent"] = NumEvent;
+        _e["RF"] = RF;
+        _e["Mode"] = Mode;
+        for (unsigned int i = 0; i < 4; i++)
+        {
+          _e[ccMomTitle[i]] = Momentum[i];
+        }
+        _e["Death"] = Death;
+        _e["Flavor"] = CurrentFlavor;
+        _e["Label"] = CurrentLabel;
+        for (unsigned int i = 0; i < 4; i++)
+        {
+          _e[ccParentMomTitle[i]] = ParentMomentum[i];
+        }
+        _e["pFlavor"] = ParentFlavor;
+        _e["pLabel"] = ParentLabel;
+        ExtraOutput::instance().emissions.push_back(_e);
+      }
 
       Ebin = (int)floor(NumEbins * Momentum[2] );
       if(Ebin>CurrentMaxEbin){

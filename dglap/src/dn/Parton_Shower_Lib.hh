@@ -1,6 +1,9 @@
 #ifndef Parton_Shower_Lib
 #define Parton_Shower_Lib
 #include <gsl/gsl_rng.h>
+#include <vector>
+#include <map>
+#include <string>
 
 #define as 0.1187
 #define MZ 91.87
@@ -32,11 +35,21 @@ class ExtraParameters
 private:
 	static ExtraParameters* _instance;
 	ExtraParameters();
-	bool _gluon_splits_only;
+	std::map<std::string, bool> _flags;
 public:
 	static ExtraParameters& instance();
-	bool gluon_splits_only();
-	void set_gluon_splits_only(bool v = true);
+	bool is_flag_set(const char *flag);
+	void set_flag(const char *flag, bool val = true);
+};
+
+class ExtraOutput
+{
+private:
+	static ExtraOutput* _instance;
+	ExtraOutput();
+public:
+	static ExtraOutput& instance();
+	std::vector<std::map<std::string, double>> emissions;
 };
 
 int PSemissions_double_capacity_if_full(PSEmissionsList *emissions);

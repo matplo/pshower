@@ -31,20 +31,24 @@ gsl_rng * reset_random_number_generator(long int rseed)
 ////////////////////////////////////////////////////////////////
 
 ExtraParameters::ExtraParameters() 
-: _gluon_splits_only(false)
+: _flags()
 {
   ;
 }
 
-void ExtraParameters::set_gluon_splits_only(bool v)
+void ExtraParameters::set_flag(const char *flag, bool val)
 {
-  _gluon_splits_only = v;
-  printf("[i] ExtraParameters::_gluon_splits_only == %d \n", _gluon_splits_only);
+  _flags[flag] = val;
+  printf("[i] ExtraParameters::set_flag %s == %d \n", flag, _flags[flag]);
 } 
 
-bool ExtraParameters::gluon_splits_only()
+bool ExtraParameters::is_flag_set(const char *flag)
 {
-  return _gluon_splits_only;
+  std::map<std::string,bool>::iterator it_;
+  it_ = _flags.find(flag);
+  if (it_ != _flags.end())
+    return _flags[flag];
+  return false;
 }
 
 ExtraParameters* ExtraParameters::_instance = 0;
@@ -57,6 +61,25 @@ ExtraParameters& ExtraParameters::instance()
   }
   return *_instance;
 }
+
+// also a singleton
+ExtraOutput::ExtraOutput() 
+: emissions()
+{
+  ;
+}
+
+ExtraOutput* ExtraOutput::_instance = 0;
+
+ExtraOutput& ExtraOutput::instance()
+{
+  if (_instance == 0)
+  {
+    _instance = new ExtraOutput();
+  }
+  return *_instance;
+}
+
 
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
@@ -734,7 +757,7 @@ void FindAZwithVeto(long int CurrentFlavor, double Efrac, double *Daughter1, dou
 
     RND = gsl_rng_uniform_pos(r);
       //Now we decide whether it splits to qqbar or g
-    if (ExtraParameters::instance().gluon_splits_only())
+    if (ExtraParameters::instance().is_flag_set("ggonly"))
     {
       AssignFlavor[0] = 0;
       AssignFlavor[1] = 0;
@@ -751,7 +774,7 @@ void FindAZwithVeto(long int CurrentFlavor, double Efrac, double *Daughter1, dou
    }
  } else {
       //We chose a quark! Fun!
-  // if (ExtraParameters::instance().gluon_splits_only())
+  // if (ExtraParameters::instance().is_flag_set("ggonly"))
   //  printf("[w] current flavor - quark?: %ld but gluon only splits selected\n", CurrentFlavor  );
   RND = gsl_rng_uniform_pos(r);
   *(Z) = ApproxPqInvert(RND, params);
@@ -1081,7 +1104,7 @@ void SplitSelectedParton(PSEmissionsList *emissions,  PSEmissionsList *DaughterE
 
    RND = gsl_rng_uniform_pos(r);
 	//Now we decide whether it splits to qqbar or g
-   if (ExtraParameters::instance().gluon_splits_only())
+   if (ExtraParameters::instance().is_flag_set("ggonly"))
    {
     AssignFlavor[0] = 0;
     AssignFlavor[1] = 0;
@@ -1098,7 +1121,7 @@ void SplitSelectedParton(PSEmissionsList *emissions,  PSEmissionsList *DaughterE
  }
 } else {
     //We chose a quark! Fun!
-  // if (ExtraParameters::instance().gluon_splits_only())
+  // if (ExtraParameters::instance().is_flag_set("ggonly"))
   //   printf("[w] current flavor - quark?: %ld but gluon only splits selected\n", CurrentFlavor  );
   FoundaZ = 0;
   RND = gsl_rng_uniform_pos(r);
