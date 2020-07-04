@@ -178,7 +178,7 @@ def main():
 				TheNumEbins, EventWideSpectraLogBin, JetRadii, dn.MinZBook,
 				args.flavor, params, 0);
 	
-		if i > 0 and i % 100 == 0:
+		if i > 0 and i % 1000 == 0:
 			if len(args.csv) > 0:
 				write_emissions_to_a_file(args.csv, dn.ExtraOutput.instance().emissions)
 				dn.ExtraOutput.instance().emissions.clear()
