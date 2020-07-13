@@ -49,7 +49,7 @@ private:
 	ExtraOutput();
 public:
 	static ExtraOutput& instance();
-	std::vector<std::map<std::string, double>> emissions;
+	std::vector< std::map<std::string, double> > emissions;
 };
 
 int PSemissions_double_capacity_if_full(PSEmissionsList *emissions);

@@ -19,7 +19,7 @@
 
 namespace std {
  %template (MapSD) std::map<std::string, double>;
- %template (MapSDVector) std::vector<std::map<std::string, double>>;
+ %template (MapSDVector) std::vector< std::map<std::string, double> >;
 }
 
  %{
