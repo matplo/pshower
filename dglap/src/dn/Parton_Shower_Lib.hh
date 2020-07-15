@@ -5,7 +5,7 @@
 #include <map>
 #include <string>
 
-#define as 0.1187
+#define ALPHA_S 0.1187
 #define MZ 91.87
 #define PI 3.14159265359
 #define DIPOLE_INITIAL_CAPACITY 200000

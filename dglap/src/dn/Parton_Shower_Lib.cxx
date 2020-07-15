@@ -13,7 +13,7 @@
 #define NewtonsInteration 6
 #define DIPOLE_INITIAL_CAPACITY 200000
 #define MAXforAreaCalc 100000
-#define as 0.1187
+#define ALPHA_S 0.1187
 #define MZ 91.87
 #define Enum 2.7182818284
 #define RescaleAlphaFactor 1.0
@@ -100,7 +100,7 @@ double ComputeSplitAngle(double Q, double RI, double t, double  NF, double CA){
   double TanRIdiv2 = tan(RI/2);
   double RescaleT = t/RescaleAlphaFactor;
 
-  return 2*atan(TanRIdiv2*pow(Enum,6*PI*pow(as,-1)*(-1 + pow(Enum,((-11*CA + 2*NF)*RescaleT)/6.))*pow(11*CA - 2*NF,-1))*pow(Q*TanRIdiv2*pow(MZ,-1),-1 + pow(Enum,((-11*CA + 2*NF)*RescaleT)/6.)));
+  return 2*atan(TanRIdiv2*pow(Enum,6*PI*pow(ALPHA_S,-1)*(-1 + pow(Enum,((-11*CA + 2*NF)*RescaleT)/6.))*pow(11*CA - 2*NF,-1))*pow(Q*TanRIdiv2*pow(MZ,-1),-1 + pow(Enum,((-11*CA + 2*NF)*RescaleT)/6.)));
 
 };
 
@@ -109,7 +109,7 @@ double ComputeKTRunningCoupling(double Q, double RI, double t, double  NF, doubl
   double TanRIdiv2 = tan(RI/2);
   double RescaleT = t/RescaleAlphaFactor;
 
-  return RescaleAlphaFactor*MZ*pow(Enum,6*PI*pow(as,-1)*(-1 + pow(Enum,((-11*CA + 2*NF)*RescaleT)/6.))*pow(11*CA - 2*NF,-1))*pow(Q*RI*pow(MZ,-1),pow(Enum,((-11*CA + 2*NF)*RescaleT)/6.));
+  return RescaleAlphaFactor*MZ*pow(Enum,6*PI*pow(ALPHA_S,-1)*(-1 + pow(Enum,((-11*CA + 2*NF)*RescaleT)/6.))*pow(11*CA - 2*NF,-1))*pow(Q*RI*pow(MZ,-1),pow(Enum,((-11*CA + 2*NF)*RescaleT)/6.));
 };
 
 ////////////////////////////////////////////////////////////////
@@ -118,7 +118,7 @@ double AlphasIntegral(double Q, double RI, double RF, double NF, double TheCA){
   double TanRIdiv2 = tan(RI/2);
   double TanRFdiv2 = tan(RF/2);
 
-  return 6*log((6*PI + as*(11*TheCA - 2*NF)*log(Q*TanRIdiv2*pow(MZ,-1)))*pow(6*PI + as*(11*TheCA - 2*NF)*log(Q*TanRFdiv2*pow(MZ,-1)),-1))*pow(11*TheCA - 2*NF,-1);
+  return 6*log((6*PI + ALPHA_S*(11*TheCA - 2*NF)*log(Q*TanRIdiv2*pow(MZ,-1)))*pow(6*PI + ALPHA_S*(11*TheCA - 2*NF)*log(Q*TanRFdiv2*pow(MZ,-1)),-1))*pow(11*TheCA - 2*NF,-1);
 
 };
 
@@ -128,7 +128,7 @@ double Alphas(double MU, double NF, double TheCA){
   double MUeval;
   MUeval = MU;
 
-  return pow(pow(as,-1) + (((11*TheCA)/3. - (4*NF*(0.5))/3.)*log(MUeval*pow(MZ,-1))*pow(PI,-1))/2.,-1);
+  return pow(pow(ALPHA_S,-1) + (((11*TheCA)/3. - (4*NF*(0.5))/3.)*log(MUeval*pow(MZ,-1))*pow(PI,-1))/2.,-1);
 }
 
 ////////////////////////////////////////////////////////////////
