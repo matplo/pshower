@@ -1161,8 +1161,8 @@ void SplitSelectedParton(PSEmissionsList *emissions,  PSEmissionsList *DaughterE
   // Fix SplitAngle and Efrac for daughters from Felix
   Daughter1[3] = SplitAngle;
   Daughter2[3] = SplitAngle;
-  Daughter1[4] = Efrac;
-  Daughter2[4] = Efrac;
+  // Daughter1[4] = Efrac;
+  // Daughter2[4] = Efrac;
 
   PSemissions_edit(DaughterEmissions, 0, Daughter1, AssignFlavor[0], PartonADead, WTA1);
   PSemissions_edit(DaughterEmissions, 1, Daughter2, AssignFlavor[1], PartonBDead, WTA2);
